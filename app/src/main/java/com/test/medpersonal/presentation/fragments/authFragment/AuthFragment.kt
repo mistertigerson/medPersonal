@@ -149,7 +149,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 ).addOnCompleteListener {
                     if (it.isSuccessful) {
 
-                        findNavController().navigate(R.id.groupFragment)
+                        findNavController().navigateUp()
                     } else {
                         Toast.makeText(
                             requireContext(),
@@ -213,6 +213,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         navController.navigateUp()
 
     }
+
 
 
 }

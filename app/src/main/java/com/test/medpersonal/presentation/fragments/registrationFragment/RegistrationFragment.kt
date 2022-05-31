@@ -44,6 +44,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         binding.btnGmail.setOnClickListener {
             googleSignUp()
         }
+        NAME = binding.regisUser.text.toString()
     }
 
 
@@ -129,12 +130,16 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                     val string = task.result?.user!!
                     verifyCheck()
                     dialogView.visibility = View.VISIBLE
+
                     countDownTimer(
                         dialogView.findViewById(R.id.tvCountTime),
                         dialogView.findViewById(R.id.btnSendAgain)
                     )
                     dialogView.findViewById<Button>(R.id.btnSendAgain).setOnClickListener() {
                         sendEmailVerification(string)
+                    }
+                    dialogView.findViewById<Button>(R.id.btnNext).setOnClickListener() {
+                        findNavController().navigate(R.id.authFragment)
                     }
                     builder.create().show()
 
@@ -200,4 +205,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         findNavController().navigate(R.id.authFragment)
     }
 
+    companion object{
+        var NAME = "relax"
+    }
 }
