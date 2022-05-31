@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.test.medpersonal.R
 import com.test.medpersonal.databinding.FragmentHomeBinding
 import com.test.medpersonal.domain.models.HomeModel
@@ -27,6 +29,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         setupSearchBar()
         setupUI()
+
     }
 
     private fun setupSearchBar() {

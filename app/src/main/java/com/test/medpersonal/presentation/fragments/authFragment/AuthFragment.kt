@@ -2,6 +2,7 @@ package com.test.medpersonal.presentation.fragments.authFragment
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
@@ -12,10 +13,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +29,8 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.test.medpersonal.R
 import com.test.medpersonal.databinding.FragmentAuthBinding
 
@@ -39,10 +39,16 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private val binding : FragmentAuthBinding by viewBinding()
     private lateinit var googleClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
+    var storage: FirebaseStorage? = null
+    var database: FirebaseDatabase? = null
+    var dialog : ProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        database = FirebaseDatabase.getInstance()
+        storage = FirebaseStorage.getInstance()
         auth = FirebaseAuth.getInstance()
+//        dialog!!.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -191,7 +197,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                 if (task.isSuccessful) {
                     Log.d(ContentValues.TAG, "Google signIn done")
                     close()
-                    findNavController().navigate(R.id.groupFragment)
                 } else {
                     Log.e(ContentValues.TAG, "Google signIn error" + task.exception?.message.toString())
 
@@ -205,7 +210,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     private fun close() {
         val navController = findNavController()
-        navController.navigate(R.id.groupFragment)
+        navController.navigateUp()
+
     }
 
 

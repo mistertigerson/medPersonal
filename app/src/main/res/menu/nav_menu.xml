@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/groupFragment"
+        android:id="@+id/chatFragment"
         android:icon="@drawable/ic_icon_sms"
         android:title="группы" />
 
