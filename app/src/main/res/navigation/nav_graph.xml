@@ -35,7 +35,8 @@
         android:label="fragment_registration"
         tools:layout="@layout/fragment_registration" />
     <fragment
-        android:id="@+id/registerFragment"
-        android:name="com.test.medpersonal.presentation.fragments.registerFragment.RegisterFragment"
-        android:label="RegisterFragment" />
+        android:id="@+id/dataFragment"
+        android:name="com.test.medpersonal.presentation.fragments.dataFragment.DataFragment"
+        android:label="fragment_data"
+        tools:layout="@layout/fragment_data" />
 </navigation>

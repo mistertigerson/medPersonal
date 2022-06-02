@@ -53,6 +53,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
         binding.tvUsername.text = user?.displayName
 
+        binding.btnAddData.setOnClickListener {
+            findNavController().navigate(R.id.dataFragment)
+        }
+
     }
 
     private suspend fun initUser() {

@@ -29,6 +29,22 @@
         />
 
     <Button
+        android:id="@+id/btn_addData"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:text="добавить новость"
+        android:background="@color/teal_200"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btn_signOut"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+
+    <Button
         android:id="@+id/btn_signOut"
         android:layout_width="match_parent"
         android:layout_height="50dp"

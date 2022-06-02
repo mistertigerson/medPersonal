@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -17,9 +18,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.test.medpersonal.R
 import com.test.medpersonal.databinding.FragmentChatBinding
+import com.test.medpersonal.domain.models.HomeModel
 import com.test.medpersonal.domain.models.User2
 import com.test.medpersonal.presentation.fragments.registrationFragment.RegistrationFragment.Companion.NAME
 
@@ -29,7 +32,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val binding: FragmentChatBinding by viewBinding()
     private lateinit var adapter: UserAdapter
     lateinit var auth: FirebaseAuth
-
+    lateinit var model : User2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,20 +42,51 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val user = FirebaseAuth.getInstance().currentUser
-        val database = Firebase.database
-        val myRef = database.getReference("message")
+        val list = ArrayList<User2>()
+        val dataB = FirebaseFirestore.getInstance()
+        dataB.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    dataB.collection("message").document()
+                    list.add(document.data)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w("TAG", "Error getting documents.", exception)
+            }
         binding.btnSend.setOnClickListener {
-            myRef.child(myRef.push().key ?: "nullable")
-                .setValue(User2(NAME, binding.etText.text.toString()))
-            Log.e("TAG", "onViewCreated: ${user?.displayName.toString()}")
+            addData()
+            initRv()
             binding.etText.text.clear()
         }
-        onChangeListener(myRef)
-        initRv()
     }
 
+    private fun addData() {
+        model = User2("",
+            binding.etText.text.toString()
+        )
+        val db = FirebaseFirestore.getInstance()
+        db.collection("message")
+            .add(model)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+//                    Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "failure", Toast.LENGTH_SHORT).show()
+                }
+            }
+//
+//        val user = FirebaseAuth.getInstance().currentUser
+//        val database = Firebase.database
+//        val myRef = database.getReference("message")
+//
+//        onChangeListener(myRef)
+    }
+
+
     private fun onChangeListener(dRef: DatabaseReference) {
+
         dRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = ArrayList<User2>()
