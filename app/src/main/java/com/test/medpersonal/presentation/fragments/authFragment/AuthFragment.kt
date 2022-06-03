@@ -148,7 +148,6 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         .etPasswordSignIn.text.toString()
                 ).addOnCompleteListener {
                     if (it.isSuccessful) {
-
                         findNavController().navigateUp()
                     } else {
                         Toast.makeText(

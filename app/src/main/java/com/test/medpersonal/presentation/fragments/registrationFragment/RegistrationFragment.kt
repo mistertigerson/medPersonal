@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -25,14 +26,21 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.test.medpersonal.R
 import com.test.medpersonal.databinding.FragmentRegistrationBinding
+import com.test.medpersonal.domain.models.UserModel
 import com.test.medpersonal.presentation.App
 
 
 class RegistrationFragment : Fragment(R.layout.fragment_registration) {
     private val binding: FragmentRegistrationBinding by viewBinding()
     private lateinit var googleClient: GoogleSignInClient
+    private var list: ArrayList<String> = arrayListOf()
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,7 +52,6 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         binding.btnGmail.setOnClickListener {
             googleSignUp()
         }
-        NAME = binding.regisUser.text.toString()
     }
 
 
@@ -80,7 +87,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
             }
     }
 
-    //проверка на результат и навигирование в mainFragment если RESULT_OK
+    //проверка на результат и навигирование в groupFragment если RESULT_OK
     private val resultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -105,7 +112,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.btnRegistration.isEnabled = s?.length in 6..20
+                binding.btnRegistration.isEnabled = s?.length in 6..60
                 binding.btnRegistration.setOnClickListener {
                     signUpWithEmailAndPassword()
                 }
@@ -139,7 +146,26 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                         sendEmailVerification(string)
                     }
                     dialogView.findViewById<Button>(R.id.btnNext).setOnClickListener() {
+                        val auth = FirebaseAuth.getInstance()
+                        val userModel = UserModel(
+                            auth.currentUser?.uid.toString(),
+                            binding.etRegisUser.text.toString()
+                        )
+                        val db = FirebaseFirestore.getInstance()
+                        db.collection("users")
+                            .add(userModel)
+                            .addOnSuccessListener { documentReference ->
+                                Log.d(
+                                    "TAG",
+                                    "DocumentSnapshot added with ID: ${documentReference.id}"
+                                )
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("TAG", "Error adding document", e)
+                            }
                         findNavController().navigate(R.id.authFragment)
+                        dialogView.visibility = View.GONE
+
                     }
                     builder.create().show()
 
@@ -203,9 +229,5 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
 
     private fun close() {
         findNavController().navigate(R.id.authFragment)
-    }
-
-    companion object{
-        var NAME = "relax"
     }
 }

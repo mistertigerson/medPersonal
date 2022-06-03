@@ -17,6 +17,7 @@ import com.google.firebase.ktx.Firebase
 import com.test.medpersonal.R
 import com.test.medpersonal.databinding.FragmentHomeBinding
 import com.test.medpersonal.domain.models.HomeModel
+import com.test.medpersonal.domain.models.UserModel
 
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -26,7 +27,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         HomeAdapter()
     }
     private var list: ArrayList<HomeModel> = ArrayList()
-    private lateinit var model : HomeModel
+    private lateinit var model: HomeModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,15 +60,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupUI() {
         val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("news").document("OtR5bvQUAPIAcgZg4xVc")
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            val city = documentSnapshot.toObject<HomeModel>()
-            if (city != null) {
-                list.add(city)
+        db.collection("news")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    model = HomeModel(
+                        text = document.data["text"].toString(),
+                        title = document.data["title"].toString(),
+                        image = document.data["image"].toString()
+                    )
+                    list.add(model)
+                    homeAdapter.submitList(list)
+                    Log.d("TAG", "${document.id} => ${document.data["title"].toString()}")
+                }
             }
-
-        }
-        homeAdapter.submitList(list)
+            .addOnFailureListener { exception ->
+                Log.w("TAG", "Error getting documents.", exception)
+            }
         binding.recyclerSearch.apply {
             adapter = homeAdapter
             layoutManager = LinearLayoutManager(context)
